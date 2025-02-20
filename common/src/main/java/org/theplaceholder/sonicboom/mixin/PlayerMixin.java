@@ -39,10 +39,14 @@ public abstract class PlayerMixin extends LivingEntity {
         if(sonicBoom$lastPos == null) sonicBoom$lastPos = this.position();
         if(sonicBoom$getSpeed() > EXPLOSION_SPEED * (sonicBoom$sonicLevel + 1)){
             sonicBoom$explode();
-            sonicBoom$sonicLevel++;
+            sonicBoom$sonicLevel = sonicBoom$calcSonicLevel();
         }
         if(sonicBoom$getSpeed() < (EXPLOSION_SPEED * sonicBoom$sonicLevel) - EXPLOSION_THRESHOLD)
-            sonicBoom$sonicLevel = (int) (sonicBoom$getSpeed() / EXPLOSION_SPEED);
+            sonicBoom$sonicLevel = sonicBoom$calcSonicLevel();
+    }
+
+    private int sonicBoom$calcSonicLevel() {
+        return (int) (sonicBoom$getSpeed() / EXPLOSION_SPEED);
     }
 
     private double sonicBoom$getSpeed(){
