@@ -19,16 +19,10 @@ import static org.theplaceholder.sonicboom.SonicBoom.*;
 public abstract class PlayerMixin extends LivingEntity {
     private static final float EXPLOSION_THRESHOLD = EXPLOSION_SPEED - EXPLOSION_THRESHOLD_SPEED;
 
-    private Vec3 sonicBoom$lastPos;
     private int sonicBoom$sonicLevel = 0;
 
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
-    }
-
-    @Inject(at = @At("HEAD"), method = "aiStep()V")
-    public void aiStep(CallbackInfo info) {
-        sonicBoom$lastPos = this.position();
     }
 
     @Inject(at = @At("HEAD"), method = "tick()V")
@@ -36,7 +30,6 @@ public abstract class PlayerMixin extends LivingEntity {
         if(!this.level().isClientSide) return;
         if(!this.isFallFlying()) return;
 
-        if(sonicBoom$lastPos == null) sonicBoom$lastPos = this.position();
         if(sonicBoom$getSpeed() > EXPLOSION_SPEED * (sonicBoom$sonicLevel + 1)){
             sonicBoom$explode();
             sonicBoom$sonicLevel = sonicBoom$calcSonicLevel();
@@ -58,9 +51,5 @@ public abstract class PlayerMixin extends LivingEntity {
         level.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
         level.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
         level.playLocalSound(this.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS,4.0F, 1, false);
-    }
-
-    public Vec3 sonicBoom$getLastPos() {
-        return sonicBoom$lastPos;
     }
 }
