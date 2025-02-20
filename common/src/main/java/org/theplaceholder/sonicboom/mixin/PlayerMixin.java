@@ -19,7 +19,7 @@ import static org.theplaceholder.sonicboom.SonicBoom.*;
 public abstract class PlayerMixin extends LivingEntity {
 
     private Vec3 sonicBoom$lastPos;
-    private boolean sonicBoom$isSonic = false;
+    private int sonicBoom$sonicLevel = 0;
 
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
@@ -29,18 +29,19 @@ public abstract class PlayerMixin extends LivingEntity {
     public void aiStep(CallbackInfo info) {
         sonicBoom$lastPos = this.position();
     }
+
     @Inject(at = @At("HEAD"), method = "tick()V")
     public void tick(CallbackInfo info) {
         if(!this.level().isClientSide) return;
         if(!this.isFallFlying()) return;
 
         if(sonicBoom$lastPos == null) sonicBoom$lastPos = this.position();
-        if(!sonicBoom$isSonic && sonicBoom$getSpeed() > EXPLOSION_SPEED){
+        if(sonicBoom$getSpeed() > EXPLOSION_SPEED * (sonicBoom$sonicLevel + 1)){
             sonicBoom$explode();
-            sonicBoom$isSonic = true;
+            sonicBoom$sonicLevel++;
         }
-        if(sonicBoom$getSpeed() < EXPLOSION_THRESHOLD_SPEED)
-            sonicBoom$isSonic = false;
+        if(sonicBoom$getSpeed() < EXPLOSION_THRESHOLD_SPEED * sonicBoom$sonicLevel)
+            sonicBoom$sonicLevel--;
     }
 
     private double sonicBoom$getSpeed(){
@@ -51,7 +52,7 @@ public abstract class PlayerMixin extends LivingEntity {
         Level level = this.level();
         level.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
         level.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
-        level.playLocalSound(this.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS,4.0F, 1, false);
+        level.playLocalSound(this.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS,4.0F, 1, false);
     }
 
     public Vec3 sonicBoom$getLastPos() {
