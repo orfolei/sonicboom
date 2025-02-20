@@ -34,7 +34,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(at = @At("HEAD"), method = "tick()V")
     public void tick(CallbackInfo info) {
         if(!this.level().isClientSide) return;
-        if(!this.isFallFlying()) return;
+        if(!this.isFallFlying() && (this.getVehicle() == null || this.getVehicle().getType() != EntityType.MINECART)) return;
 
         if(sonicBoom$lastPos == null) sonicBoom$lastPos = this.position();
         if(sonicBoom$getSpeed() > EXPLOSION_SPEED * (sonicBoom$sonicLevel + 1)){
@@ -42,7 +42,7 @@ public abstract class PlayerMixin extends LivingEntity {
             sonicBoom$sonicLevel++;
         }
         if(sonicBoom$getSpeed() < (EXPLOSION_SPEED * sonicBoom$sonicLevel) - EXPLOSION_THRESHOLD)
-            sonicBoom$sonicLevel--;
+            sonicBoom$sonicLevel = (int) (sonicBoom$getSpeed() / EXPLOSION_SPEED);
     }
 
     private double sonicBoom$getSpeed(){
