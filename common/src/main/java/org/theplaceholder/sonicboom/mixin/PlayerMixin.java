@@ -17,6 +17,7 @@ import static org.theplaceholder.sonicboom.SonicBoom.*;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
+    private static final float EXPLOSION_THRESHOLD = EXPLOSION_SPEED - EXPLOSION_THRESHOLD_SPEED;
 
     private Vec3 sonicBoom$lastPos;
     private int sonicBoom$sonicLevel = 0;
@@ -40,7 +41,7 @@ public abstract class PlayerMixin extends LivingEntity {
             sonicBoom$explode();
             sonicBoom$sonicLevel++;
         }
-        if(sonicBoom$getSpeed() < EXPLOSION_THRESHOLD_SPEED * sonicBoom$sonicLevel)
+        if(sonicBoom$getSpeed() < (EXPLOSION_SPEED * sonicBoom$sonicLevel) - EXPLOSION_THRESHOLD)
             sonicBoom$sonicLevel--;
     }
 
