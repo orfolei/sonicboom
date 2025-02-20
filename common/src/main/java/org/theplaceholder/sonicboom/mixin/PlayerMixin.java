@@ -50,7 +50,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     private double sonicBoom$getSpeed(){
-        return this.sonicBoom$getLastPos().distanceTo(position()) * 20;
+        return this.getDeltaMovement().length() * 20;
     }
 
     private void sonicBoom$explode(){
